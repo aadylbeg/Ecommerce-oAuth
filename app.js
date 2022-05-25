@@ -5,9 +5,9 @@ const passport = require('passport');
 require('./oauth')
 
 const app = express();
-app.use(session({ secret: 'cats' }));
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(session({ secret: 'cats' }));
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 function isLoggedIn(req, res, next) {
     req.user ? next() : res.sendStatus(401)

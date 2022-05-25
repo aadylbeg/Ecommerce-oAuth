@@ -9,13 +9,16 @@ passport.use(new GoogleStrategy({
     clientID: google_id,
     clientSectret: google_secret,
     callbackURL: "http://localhost:5000/google/callback",
-    passReqToCallBack: true
+    // passReqToCallBack: true
 },
     function (req, accessToken, refreshToken, profile, done) {
-        return done(null, profile)
+        // return done(null, profile)
         // Users.findOrCreate({ googleId: profile.id }, function (err) {
         //     return done(err, user)
         // })
+        Users.findOne({ email: profile.emails[o].value }).then((date) => {
+            if (data) { throw console.error(error) };
+        })
     }
 ));
 

@@ -12,7 +12,7 @@ router.post('/verify-my-code', verifyMyCode);
 router.post('/login', login);
 router.use(protect)
 router.post('/verify-my-code-to-restore', verifyMyCodeToRestore);
-router.post('/sign-up', passport.authenticate('google', { scope: ['email', 'profile'] }), signUp);
+router.post('/sign-up', signUp);
 router.get('/get-me', getMe);
 router.patch('/update-my-password', updateMyPassword);
 router.patch('/update-me', updateMe);

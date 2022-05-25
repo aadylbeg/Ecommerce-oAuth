@@ -3,6 +3,7 @@ const { Users } = require('./../../models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { createSendToken } = require('./../../utils/createSendToken');
+const { sendMail } = require('./../../utils/sendMail');
 const AppError = require('../../utils/appError');
 const catchAsync = require('./../../utils/catchAsync');
 
@@ -30,25 +31,25 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 exports.sendMeCode = catchAsync(async (req, res, next) => {
-    var { phone_number } = req.body;
-    if (!phone_number || phone_number.length < 8) return next(new AppError('Invalid Credentials', 400));
+    var { email } = req.body;
+    if (email.length<5) return next(new AppError('Invalid Email', 400));
 
-    const user = await Users.findOne({ where: { phone_number } });
-    if (user) return next(new AppError('Already fixed phone number', 400));
+    const user = await Users.findOne({ where: { email } });
+    if (user) return next(new AppError('User already signed up', 400));
 
-    // var sms_code = Math.floor(Math.random() * 10000);
-    var sms_code = '1111'
-    const newUser = await Users.create({ phone_number, sms_code, isVerified: false });
-    // send sms_code
+    var sms_code = Math.floor(Math.random() * 10000);
+    await sendMail({to: email, code: sms_code })
+    
+    await Users.create({ email, sms_code, isVerified: false });
 
     res.status(200).send({ msg: 'Succesfully sended' });
 });
 
 exports.verifyMyCode = catchAsync(async (req, res, next) => {
-    var { phone_number, sms_code } = req.body;
-    if (!phone_number || !sms_code) return next(new AppError('Invalid Credentials', 400));
+    var { email, sms_code } = req.body;
+    if (!email || !sms_code) return next(new AppError('Invalid Credentials', 400));
 
-    const user = await Users.findOne({ where: { phone_number, sms_code } });
+    const user = await Users.findOne({ where: { email, sms_code } });
     if (!user) return next(new AppError('Not found', 400));
 
     createSendToken(user, 201, res);
@@ -60,7 +61,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
         return next(new AppError('Invalid Credentials', 400));
     password = await bcrypt.hash(password, 12);
 
-    const user = await Users.findOne({ where: { phone_number } });
+    const user = await Users.findOne({ where: { email } });
     if (!user) return next(new AppError('Not found', 400));
     await user.update({ username, email, password, address, phone_number, isVerified: true });
     res.status(200).send(user);

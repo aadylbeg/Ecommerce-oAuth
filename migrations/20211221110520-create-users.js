@@ -13,7 +13,7 @@ module.exports = {
         defaultValue: DataTypes.UUIDV4
       },
       sms_code: {
-        type: DataTypes.STRING
+        type: DataTypes.INTEGER
       },
       isVerified: {
         type: DataTypes.BOOLEAN
